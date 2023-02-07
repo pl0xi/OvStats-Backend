@@ -252,4 +252,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # Config file
-/OvStats_config
+OvStats_config/
