@@ -250,3 +250,6 @@ _Pvt_Extensions
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Config file
+/OvStats_config
