@@ -27,28 +27,40 @@ namespace OvStats_Website.Controllers
                 }
             }
 
-            _httpClient.BaseAddress = new Uri("https://europe.api.riotgames.com/riot/");
             _httpClient.DefaultRequestHeaders
                 .Add("X-Riot-Token", riotAPI);
         }
 
         [HttpGet]
-        [Route("puuid")]
-        public String Get(string username, string tagLine)
+        [Route("playerInfo")]
+        public String Get(string username, string region)
         {
-            HttpResponseMessage response = _httpClient.GetAsync($"account/v1/accounts/by-riot-id/{username}/{tagLine}").Result;
+            SummonerAccount userAccount = GetAccount(username, region);
+            HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/league/v4/entries/by-summoner/{userAccount.id}").Result;           
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
-            JObject jsonContent = JObject.Parse(content);
-            var puuid = jsonContent.GetValue("puuid");
 
-            if(puuid is not null)
-            {
-                return puuid.ToString();
-            } else
-            {
-                return $"Unable to fetch puuid for {username}#{tagLine}";
-            }
+            return content.ToString();
         }
+
+        private static SummonerAccount GetAccount(string username, string region)
+        {
+            HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{username}").Result;
+            response.EnsureSuccessStatusCode();
+            var content = response.Content.ReadAsStringAsync().Result;
+         
+            return JsonConvert.DeserializeObject<SummonerAccount>(content) ?? throw new InvalidOperationException();
+        }
+    }
+
+    public class SummonerAccount
+    {
+        public string accountId { get; set; }
+        public int profileIconId { get; set; }
+        public long revisionDate { get; set; }
+        public string name { get; set; }
+        public string id { get; set; }
+        public string puuid { get; set; }
+        public long summonerLevel { get; set; } 
     }
 }
