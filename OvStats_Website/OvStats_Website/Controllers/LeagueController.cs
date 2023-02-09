@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OvStats_Website.DTO;
 
 namespace OvStats_Website.Controllers
 {
@@ -35,7 +36,7 @@ namespace OvStats_Website.Controllers
         [Route("playerInfo")]
         public String Get(string username, string region)
         {
-            SummonerAccount userAccount = GetAccount(username, region);
+            SummonerAccountDTO userAccount = GetAccount(username, region);
             HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/league/v4/entries/by-summoner/{userAccount.id}").Result;           
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
@@ -43,24 +44,13 @@ namespace OvStats_Website.Controllers
             return content.ToString();
         }
 
-        private static SummonerAccount GetAccount(string username, string region)
+        private static SummonerAccountDTO GetAccount(string username, string region)
         {
             HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{username}").Result;
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
          
-            return JsonConvert.DeserializeObject<SummonerAccount>(content) ?? throw new InvalidOperationException();
+            return JsonConvert.DeserializeObject<SummonerAccountDTO>(content) ?? throw new InvalidOperationException();
         }
-    }
-
-    public class SummonerAccount
-    {
-        public string accountId { get; set; }
-        public int profileIconId { get; set; }
-        public long revisionDate { get; set; }
-        public string name { get; set; }
-        public string id { get; set; }
-        public string puuid { get; set; }
-        public long summonerLevel { get; set; } 
     }
 }
