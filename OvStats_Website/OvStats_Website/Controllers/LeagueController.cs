@@ -27,9 +27,6 @@ namespace OvStats_Website.Controllers
                     _logger.LogInformation("Unable to read riot API");
                 }
             }
-
-            _httpClient.DefaultRequestHeaders
-                .Add("X-Riot-Token", riotAPI);
         }
 
         [HttpGet]
@@ -37,16 +34,24 @@ namespace OvStats_Website.Controllers
         public String Get(string username, string region)
         {
             SummonerAccountDTO userAccount = GetAccount(username, region);
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
             HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/league/v4/entries/by-summoner/{userAccount.id}").Result;           
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
 
-            return content.ToString();
+            IEnumerable<SummonerStatsDTO> summonerStats = JsonConvert.DeserializeObject<IEnumerable<SummonerStatsDTO>>(content) ?? throw new InvalidOperationException();
+
+            return summonerStats.First().ToString() ?? throw new ArgumentNullException();
         }
 
-        private static SummonerAccountDTO GetAccount(string username, string region)
+        private SummonerAccountDTO GetAccount(string username, string region)
         {
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
             HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{username}").Result;
+            _logger.LogInformation(response.ToString());
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
          
