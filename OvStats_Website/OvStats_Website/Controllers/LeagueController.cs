@@ -29,9 +29,11 @@ namespace OvStats_Website.Controllers
             }
         }
 
+        // Need to convert this to ActionResult 
         [HttpGet]
         [Route("playerInfo")]
-        public String Get(string username, string region)
+        [Produces("application/json")]
+        public String GetPlayerInfo(string username, string region)
         {
             SummonerAccountDTO userAccount = GetAccount(username, region);
 
@@ -46,13 +48,29 @@ namespace OvStats_Website.Controllers
             return summonerStats.First().ToString() ?? throw new ArgumentNullException();
         }
 
+        [HttpGet]
+        [Route("verifyAccount")]
+        [Produces("application/json")]
+        public ActionResult VerifyAccount (string username, string region)
+        {
+            if(GetAccount(username, region) is not null)
+            {
+                return Ok();
+            } else
+            {
+                return NotFound();
+            }
+        }
+
         private SummonerAccountDTO GetAccount(string username, string region)
         {
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
             HttpResponseMessage response = _httpClient.GetAsync($"https://{region}.api.riotgames.com/lol/summoner/v4/summoners/by-name/{username}").Result;
-            _logger.LogInformation(response.ToString());
-            response.EnsureSuccessStatusCode();
+            if (((int)response.StatusCode) != 200)
+            {
+                return null;
+            } 
             var content = response.Content.ReadAsStringAsync().Result;
          
             return JsonConvert.DeserializeObject<SummonerAccountDTO>(content) ?? throw new InvalidOperationException();
