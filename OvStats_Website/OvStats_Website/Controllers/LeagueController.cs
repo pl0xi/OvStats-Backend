@@ -33,7 +33,7 @@ namespace OvStats_Website.Controllers
         [HttpGet]
         [Route("playerInfo")]
         [Produces("application/json")]
-        public String GetPlayerInfo(string username, string region)
+        public ActionResult GetPlayerInfo(string username, string region)
         {
             SummonerAccountDTO userAccount = GetAccount(username, region);
 
@@ -44,8 +44,9 @@ namespace OvStats_Website.Controllers
             var content = response.Content.ReadAsStringAsync().Result;
 
             IEnumerable<SummonerStatsDTO> summonerStats = JsonConvert.DeserializeObject<IEnumerable<SummonerStatsDTO>>(content) ?? throw new InvalidOperationException();
+            summonerStats.First().summonerId = "hidden";
 
-            return summonerStats.First().ToString() ?? throw new ArgumentNullException();
+            return Ok(summonerStats.First());
         }
 
         [HttpGet]

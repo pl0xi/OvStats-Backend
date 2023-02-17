@@ -18,13 +18,6 @@ namespace OvStats_Website.DTO
         public bool freshBlood { get; set; }
         public bool inactive { get; set; }
         public MiniSeries miniSeries { get; set; }
-
-        public override string ToString()
-        {
-            SummonerStatsDTO _summonerStatsDTO = this;
-            _summonerStatsDTO.summonerId = "hidden";
-            return JsonConvert.SerializeObject(_summonerStatsDTO);
-        }
     }
 
     public class MiniSeries
