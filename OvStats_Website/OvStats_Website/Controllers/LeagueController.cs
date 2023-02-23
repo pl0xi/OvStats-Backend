@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OvStats_Website.DTO;
+using System.Diagnostics;
 
 namespace OvStats_Website.Controllers
 {
@@ -29,13 +31,17 @@ namespace OvStats_Website.Controllers
             }
         }
 
-        // Need to convert this to ActionResult 
         [HttpGet]
-        [Route("playerInfo")]
+        [Route("summoner")]
         [Produces("application/json")]
-        public ActionResult GetPlayerInfo(string username, string region)
+        public ActionResult GetSummoner(string username, string region)
         {
             SummonerAccountDTO userAccount = GetAccount(username, region);
+
+            if(userAccount is null)
+            {
+                return NotFound("Something went wrong.");
+            }
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
@@ -44,15 +50,16 @@ namespace OvStats_Website.Controllers
             var content = response.Content.ReadAsStringAsync().Result;
 
             IEnumerable<SummonerStatsDTO> summonerStats = JsonConvert.DeserializeObject<IEnumerable<SummonerStatsDTO>>(content) ?? throw new InvalidOperationException();
-            summonerStats.First().summonerId = "hidden";
+            SummonerStatsDTO responseStats = summonerStats.Where(summonerStats_ => summonerStats_.queueType == "RANKED_SOLO_5x5").First();
+            responseStats.summonerId = "hidden";
 
-            return Ok(summonerStats.First());
+            return Ok(responseStats);
         }
 
         [HttpGet]
-        [Route("verifyAccount")]
+        [Route("summoner/verify")]
         [Produces("application/json")]
-        public ActionResult VerifyAccount (string username, string region)
+        public ActionResult VerifySummoner (string username, string region)
         {
             if(GetAccount(username, region) is not null)
             {
@@ -73,7 +80,7 @@ namespace OvStats_Website.Controllers
                 return null;
             } 
             var content = response.Content.ReadAsStringAsync().Result;
-         
+            
             return JsonConvert.DeserializeObject<SummonerAccountDTO>(content) ?? throw new InvalidOperationException();
         }
     }
