@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OvStats_Website.DTO;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace OvStats_Website.Controllers
 {
@@ -31,7 +32,7 @@ namespace OvStats_Website.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet(Name = nameof(GetSummoner))]
         [Route("summoner")]
         [Produces("application/json")]
         public ActionResult GetSummoner(string username, string region)
@@ -53,21 +54,59 @@ namespace OvStats_Website.Controllers
             SummonerStatsDTO responseStats = summonerStats.Where(summonerStats_ => summonerStats_.queueType == "RANKED_SOLO_5x5").First();
             responseStats.summonerId = "hidden";
 
-            return Ok(responseStats);
+            var returnResponse = new
+            {
+                href = Url.Link(nameof(GetSummoner), null),
+                data = responseStats
+            };
+
+            return Ok(returnResponse);
         }
 
-        [HttpGet]
+        [HttpGet(Name = nameof(VerifySummoner))]
         [Route("summoner/verify")]
         [Produces("application/json")]
         public ActionResult VerifySummoner (string username, string region)
         {
-            if(GetAccount(username, region) is not null)
+            var returnResponse = new
             {
-                return Ok();
+                href = Url.Link(nameof(VerifySummoner), null),
+            };
+
+            if (GetAccount(username, region) is not null)
+            {
+                return Ok(returnResponse);
             } else
             {
-                return NotFound();
+                return NotFound(returnResponse);
             }
+        }
+
+        [HttpGet(Name = nameof(GetSummonerMatchHistory))]
+        [Route("summoner/matches")]
+        [Produces("application/json")]
+        public ActionResult GetSummonerMatchHistory(string username, string region) {
+            SummonerAccountDTO userAccount = GetAccount(username, region);
+
+            if (userAccount is null)
+            {
+                return NotFound("Something went wrong.");
+            }
+
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
+            HttpResponseMessage response = _httpClient.GetAsync($"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{userAccount.puuid}/ids?start=0&count=10").Result;
+            response.EnsureSuccessStatusCode();
+            var content = response.Content.ReadAsStringAsync().Result;
+            IEnumerable<string> result = JsonConvert.DeserializeObject<IEnumerable<string>>(content) ?? throw new InvalidOperationException();
+
+            var returnResponse = new
+            {
+                href = Url.Link(nameof(GetSummonerMatchHistory), null),
+                data = result
+            };
+
+            return Ok(returnResponse);
         }
 
         private SummonerAccountDTO GetAccount(string username, string region)
