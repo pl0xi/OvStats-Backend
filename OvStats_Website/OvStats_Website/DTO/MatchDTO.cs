@@ -2,5 +2,6 @@
 {
     public class MatchDTO
     {
+        public InfoDTO info { get; set; }
     }
 }

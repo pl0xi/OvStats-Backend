@@ -86,6 +86,7 @@ namespace OvStats_Website.Controllers
         [Route("summoner/matches")]
         [Produces("application/json")]
         public ActionResult GetSummonerMatchHistory(string username, string region) {
+            List<MatchDTO> matches = new List<MatchDTO>(); 
             SummonerAccountDTO userAccount = GetAccount(username, region);
 
             if (userAccount is null)
@@ -95,15 +96,25 @@ namespace OvStats_Website.Controllers
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
-            HttpResponseMessage response = _httpClient.GetAsync($"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{userAccount.puuid}/ids?start=0&count=10").Result;
+            HttpResponseMessage response = _httpClient.GetAsync($"https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{userAccount.puuid}/ids?start=0&count=5&type=ranked").Result;
             response.EnsureSuccessStatusCode();
             var content = response.Content.ReadAsStringAsync().Result;
             IEnumerable<string> result = JsonConvert.DeserializeObject<IEnumerable<string>>(content) ?? throw new InvalidOperationException();
+            
+            foreach (var match in result)
+            {
+                MatchDTO match_ = GetMatch(match);
+                matches.Add(match_);
+            }
+
 
             var returnResponse = new
             {
                 href = Url.Link(nameof(GetSummonerMatchHistory), null),
-                data = result
+                data = new { 
+                    playerPuuid = userAccount.puuid,
+                    matches =  matches
+                }
             };
 
             return Ok(returnResponse);
@@ -121,6 +132,21 @@ namespace OvStats_Website.Controllers
             var content = response.Content.ReadAsStringAsync().Result;
             
             return JsonConvert.DeserializeObject<SummonerAccountDTO>(content) ?? throw new InvalidOperationException();
+        }
+
+        private MatchDTO GetMatch(string matchID)
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotAPI);
+            HttpResponseMessage response = _httpClient.GetAsync($"https://europe.api.riotgames.com/lol/match/v5/matches/{matchID}").Result;
+            if (((int)response.StatusCode) != 200)
+            {
+                return null;
+            }
+            var content = response.Content.ReadAsStringAsync().Result;
+
+
+            return JsonConvert.DeserializeObject<MatchDTO>(content) ?? throw new InvalidOperationException();
         }
     }
 }
