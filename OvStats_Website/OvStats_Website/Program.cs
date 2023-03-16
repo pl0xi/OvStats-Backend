@@ -1,8 +1,12 @@
+using OvStats_Website.Clients;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IRiotClient, RiotClient>();
+builder.Services.AddHttpClient<IRiotClient, RiotClient>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllHeaders",
