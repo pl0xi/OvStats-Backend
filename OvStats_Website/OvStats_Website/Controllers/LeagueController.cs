@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OvStats_Website.DTO;
 
 namespace OvStats_Website.Controllers
