@@ -42,5 +42,17 @@ namespace OvStats_Website_Test
             Assert.NotNull(summonerStats);
             Assert.Contains(summonerStats, stats => stats.queueType == "RANKED_SOLO_5x5");
         }
+
+        [Fact]
+        public async Task GetMatchTest()
+        {
+            // This test needs refactoring every 2 years. (Limited by riot database)
+            string matchId = "EUW1_6349504068";
+            MatchDTO match = await _IRiotClient.GetMatch(matchId);
+
+            Assert.NotNull(match);
+            Assert.Equal(1680817137246, match.info.gameEndTimestamp);
+
+        }
     }
 }
