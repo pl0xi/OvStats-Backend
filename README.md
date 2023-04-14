@@ -5,6 +5,13 @@ This is a general website for OvStats, also working as a backend service for (ht
 - ASP.NET Core 7
 - xUnit
 
+## Features
+- REST API
+  - Riot Informations
+    - League summoner stats 
+      - Match History
+      - Rank
+
 # Roadmap
 - [ ] Testing
 - [ ] Automated testing (Github actions)
