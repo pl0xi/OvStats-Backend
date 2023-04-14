@@ -3,6 +3,7 @@ This is a general website for OvStats, also working as a backend service for (ht
 
 ## Tech stack
 - ASP.NET Core 7
+- xUnit
 
 # Roadmap
 - [ ] Testing
