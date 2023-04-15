@@ -6,7 +6,7 @@ namespace OvStats_Website.Clients
     public class RiotClient : IRiotClient
     {
         private readonly HttpClient _httpClient;
-        private readonly string riotApiKey = "*";
+        private readonly string riotApiKey = "";
 
         public RiotClient(HttpClient httpClient) {
             _httpClient = httpClient;
@@ -47,7 +47,7 @@ namespace OvStats_Website.Clients
             var content = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<IEnumerable<string>>(content) ?? throw new InvalidOperationException();
-    }
+        }
     }
 }
 

@@ -2,7 +2,7 @@
 {
     public class ParticipantsDTO
     {
-        public int assist { get; set; }
+        public int assists { get; set; }
         public int baronKills { get; set; }
         public int bountyKills { get; set; }
         public int champExperience { get; set; }
