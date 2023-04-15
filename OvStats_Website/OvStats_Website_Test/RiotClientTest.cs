@@ -54,5 +54,14 @@ namespace OvStats_Website_Test
             Assert.Equal(1680817137246, match.info.gameEndTimestamp);
 
         }
+
+        [Fact]
+        public async Task GetMatchHistoryIDsTest()
+        {
+            string puuid = "EBoOMO87H7Po6QMFIG9KkztfuUrbw6KsiqBTgStOAGMorRc6PKpQ99-0OS5Hi4codxnQZMCm8WxskQ";
+            IEnumerable<string> matches = await _IRiotClient.GetMatchHistoryIDs(puuid);
+
+            Assert.Equal(5, matches.Count());
+        }
     }
 }
