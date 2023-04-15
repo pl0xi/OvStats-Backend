@@ -43,5 +43,25 @@ namespace OvStats_Website_Test
 
             Assert.Equal("sofieee", summonerStats.summonerName);
         }
+
+        [Fact]
+        public async Task VerifySummonerTest()
+        {
+            var result = await _leagueController.VerifySummoner("sofieee", "euw1");
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task GetSummonerMatchHistoryTest()
+        {
+            var result = await _leagueController.GetSummonerMatchHistory("sofieee", "euw1");
+            OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
+            dynamic okResultDynamic = okResult.Value;
+            dynamic data = okResultDynamic.GetType().GetProperty("data").GetValue(okResultDynamic, null);
+            List<MatchDTO> matches = data.GetType().GetProperty("matches").GetValue(data, null) as List<MatchDTO>;
+
+            Assert.Equal("EBoOMO87H7Po6QMFIG9KkztfuUrbw6KsiqBTgStOAGMorRc6PKpQ99-0OS5Hi4codxnQZMCm8WxskQ", data.GetType().GetProperty("playerPuuid").GetValue(data, null) as string);
+            Assert.Equal(5, matches.Count);
+        }
     }
 }
