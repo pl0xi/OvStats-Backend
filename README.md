@@ -14,7 +14,7 @@ This is a general website for OvStats, also working as a backend service for (ht
       - Rank
 
 # Roadmap
-- [ ] Testing
+- [x] Testing
 - [ ] Automated testing (Github actions)
 - [ ] Local database (Minimize request to Riot API)
 - [ ] Profile view 
