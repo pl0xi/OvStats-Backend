@@ -15,7 +15,7 @@ This is a general website for OvStats, also working as a backend service for (ht
 
 # Roadmap
 - [x] Testing
-- [ ] Automated testing (Github actions)
+- [x] Automated testing (Github actions)
 - [ ] Local database (Minimize request to Riot API)
 - [ ] Profile view 
 - [ ] Summoner match history
