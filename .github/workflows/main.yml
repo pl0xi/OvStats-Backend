@@ -17,6 +17,10 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
+    - name: Create appsettings.json with API key
+      run: |
+        echo '{ "Riot": { "ApiKey": "${{ secrets.RIOT_API_KEY }}" } }' > OvStats_Website/appsettings.json
+
     - name: Restore dependencies
       run: dotnet restore OvStats_Website/OvStats_Website.sln
 
@@ -24,6 +28,4 @@ jobs:
       run: dotnet build OvStats_Website/OvStats_Website.sln --configuration Release --output ./build_output
 
     - name: Test
-      env:
-        RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
       run: dotnet vstest ./build_output/OvStats_Website_Test.dll --logger:"trx;LogFileName=test_results.trx"
