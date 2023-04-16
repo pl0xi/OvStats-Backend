@@ -19,7 +19,7 @@ jobs:
 
     - name: Create appsettings.json with API key
       run: |
-        echo '{ "Riot": { "ApiKey": "${{ secrets.RIOT_API_KEY }}" } }' > OvStats_Website/appsettings.json
+        echo '{ "Riot": { "ApiKey": "${{ secrets.RIOT_API_KEY }}" } }' > OvStats_Website/OvStats_Website/appsettings.json
 
     - name: Restore dependencies
       run: dotnet restore OvStats_Website/OvStats_Website.sln
