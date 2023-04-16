@@ -21,9 +21,9 @@ jobs:
       run: dotnet restore OvStats_Website/OvStats_Website.sln
 
     - name: Build
-      run: dotnet build OvStats_Website/OvStats_Website.sln --configuration Release --no-restore
+      run: dotnet build OvStats_Website/OvStats_Website.sln --configuration Release --output ./build_output
 
     - name: Test
       env:
         RIOT_API_KEY: ${{ secrets.RIOT_API_KEY }}
-      run: dotnet test OvStats_Website/OvStats_Website_Test/OvStats_Website_Test.csproj --no-build --verbosity normal
+      run: dotnet vstest ./build_output/OvStats_Website_Test.dll --logger:"trx;LogFileName=test_results.trx"
