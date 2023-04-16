@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
-using Newtonsoft.Json;
 using OvStats_Website.Clients;
 using OvStats_Website.Controllers;
 using OvStats_Website.DTO;
@@ -17,7 +17,14 @@ namespace OvStats_Website_Test
         public LeagueControllerTest(ITestOutputHelper output)
         {
             Mock<HttpClient> httpClient = new Mock<HttpClient>();
-            IRiotClient riotClient = new RiotClient(httpClient.Object);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddUserSecrets("c9800722-e142-4131-b608-2f7c875679c7"); 
+
+            IConfiguration config = builder.Build();
+
+            IRiotClient riotClient = new RiotClient(httpClient.Object, config);
             _leagueController = new LeagueController(riotClient)
             {
                 ControllerContext = new ControllerContext

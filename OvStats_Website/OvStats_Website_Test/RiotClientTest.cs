@@ -1,4 +1,5 @@
 using Castle.Core.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using Moq;
@@ -17,7 +18,13 @@ namespace OvStats_Website_Test
         public RiotClientTest(ITestOutputHelper output)
         {
             Mock<HttpClient> mockHttpClient = new Mock<HttpClient>();
-            _IRiotClient = new RiotClient(mockHttpClient.Object);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddUserSecrets("c9800722-e142-4131-b608-2f7c875679c7");
+
+            IConfiguration config = builder.Build();
+            _IRiotClient = new RiotClient(mockHttpClient.Object, config);
             _output = output;
         }
 
