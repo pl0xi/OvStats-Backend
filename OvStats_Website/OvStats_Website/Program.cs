@@ -26,11 +26,18 @@ if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseStaticFiles();
+} else
+{
+    app.UseSpa(spa =>
+    {
+        spa.Options.SourcePath = "ClientApp";
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+    });
 }
 
 app.UseCors("AllowAllHeaders");
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseRouting();
 
 
