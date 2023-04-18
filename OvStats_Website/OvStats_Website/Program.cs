@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using OvStats_Website.Clients;
+using OvStats_Website.DBContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,9 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AppContext"))
+);
 
 var app = builder.Build();
 
