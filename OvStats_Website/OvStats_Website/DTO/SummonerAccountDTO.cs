@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.ComponentModel.DataAnnotations;
 
 namespace OvStats_Website.DTO
 {
@@ -13,5 +14,10 @@ namespace OvStats_Website.DTO
         public string puuid { get; set; }
         public long summonerLevel { get; set; }
         public string region { get; set; }
+
+        public static implicit operator SummonerAccountDTO(EntityEntry<SummonerAccountDTO> v)
+        {
+            return v.Entity;
+        }
     }
 }

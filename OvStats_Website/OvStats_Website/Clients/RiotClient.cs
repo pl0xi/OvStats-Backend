@@ -6,12 +6,10 @@ namespace OvStats_Website.Clients
     public class RiotClient : IRiotClient
     {
         private readonly HttpClient _httpClient;
-        private readonly string riotApiKey;
 
         public RiotClient(HttpClient httpClient, IConfiguration config) {
             _httpClient = httpClient;
-            riotApiKey = config["Riot:ApiKey"];
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotApiKey);
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", config["Riot:ApiKey"]);
         }
 
         public async Task<SummonerAccountDTO> GetAccount(string username, string region)
