@@ -1,10 +1,12 @@
-# OvStats Website [![.NET Core CI](https://github.com/pl0xi/OvStats-Website/actions/workflows/main.yml/badge.svg)](https://github.com/pl0xi/OvStats-Website/actions/workflows/main.yml)
-This is a general website for OvStats, also working as a backend service for (https://github.com/pl0xi/OvStats-Twitch_Panel_League_of_Legends)
+# OvStats Backend [![.NET Core CI](https://github.com/pl0xi/OvStats-Website/actions/workflows/main.yml/badge.svg)](https://github.com/pl0xi/OvStats-Website/actions/workflows/main.yml)
+This is a backend service for (https://github.com/pl0xi/OvStats-Twitch_Panel_League_of_Legends)
 
 ## Tech stack
 - ASP.NET Core 7
 - xUnit
 - Moq
+- Entity Framework 
+- Postgres
 
 ## Features
 - REST API
