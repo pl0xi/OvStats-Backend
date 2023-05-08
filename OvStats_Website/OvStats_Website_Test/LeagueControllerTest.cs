@@ -55,6 +55,7 @@ namespace OvStats_Website_Test
         {
             _dbContext.Dispose();
             _dbContext = new AppDBContext(databaseOptions);
+            GC.SuppressFinalize(this);
         }
 
         [Fact]
@@ -62,10 +63,10 @@ namespace OvStats_Website_Test
         {
             var result = await _leagueController.GetSummoner("sofieee", "euw1");
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-            dynamic okResultDynamic = okResult.Value;
-            SummonerStatsDTO summonerStats = okResultDynamic.GetType().GetProperty("data").GetValue(okResultDynamic, null) as SummonerStatsDTO;
+            dynamic okResultDynamic = okResult.Value ?? throw new ArgumentException("NULL ERROR");
+            SummonerStatsDTO summonerStats = okResultDynamic.GetType().GetProperty("data").GetValue(okResultDynamic, null) as SummonerStatsDTO ?? throw new ArgumentException("NULL ERROR");
 
-            Assert.Equal("sofieee", summonerStats.summonerName);
+            Assert.Equal("sofieee", summonerStats.SummonerName);
         }
 
         [Fact]
@@ -80,9 +81,9 @@ namespace OvStats_Website_Test
         {
             var result = await _leagueController.GetSummonerMatchHistory("sofieee", "euw1");
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result);
-            dynamic okResultDynamic = okResult.Value;
+            dynamic okResultDynamic = okResult.Value ?? throw new ArgumentException("NULL ERROR");
             dynamic data = okResultDynamic.GetType().GetProperty("data").GetValue(okResultDynamic, null);
-            List<MatchDTO> matches = data.GetType().GetProperty("matches").GetValue(data, null) as List<MatchDTO>;
+            List<MatchDTO> matches = data.GetType().GetProperty("matches").GetValue(data, null) as List<MatchDTO> ?? throw new ArgumentException("NULL ERROR");
 
             Assert.Equal("EBoOMO87H7Po6QMFIG9KkztfuUrbw6KsiqBTgStOAGMorRc6PKpQ99-0OS5Hi4codxnQZMCm8WxskQ", data.GetType().GetProperty("playerPuuid").GetValue(data, null) as string);
             Assert.Equal(5, matches.Count);
@@ -100,18 +101,18 @@ namespace OvStats_Website_Test
             Assert.NotNull(resultPersist);
 
             // Pull summoner from local database via. _dbContext
-            SummonerAccountDTO resultDbContext = await _dbContext.SummonerAccount.FirstOrDefaultAsync(search => search.name == summonerName && search.region == summonerRegion);
-            Assert.Equal(summonerName, resultDbContext.name);
-            Assert.Equal(summonerRegion, resultDbContext.region);
-            Assert.Equal("EBoOMO87H7Po6QMFIG9KkztfuUrbw6KsiqBTgStOAGMorRc6PKpQ99-0OS5Hi4codxnQZMCm8WxskQ", resultDbContext.puuid);
+            SummonerAccountDTO resultDbContext = await _dbContext.SummonerAccount.FirstOrDefaultAsync(search => search.Name == summonerName && search.Region == summonerRegion) ?? throw new ArgumentException("NULL ERROR");
+            Assert.Equal(summonerName, resultDbContext.Name);
+            Assert.Equal(summonerRegion, resultDbContext.Region);
+            Assert.Equal("EBoOMO87H7Po6QMFIG9KkztfuUrbw6KsiqBTgStOAGMorRc6PKpQ99-0OS5Hi4codxnQZMCm8WxskQ", resultDbContext.Puuid);
 
             // Pull summoner from local database via. LeagueController
             var resultLeagueController = await _leagueController.GetSummoner(summonerName, summonerRegion);
             OkObjectResult resultLeagueControllerOk = Assert.IsType<OkObjectResult>(resultLeagueController);
-            dynamic resultLeagueControllerDynamic = resultLeagueControllerOk.Value;
+            dynamic resultLeagueControllerDynamic = resultLeagueControllerOk.Value ?? throw new ArgumentException("NULL ERROR");
             SummonerStatsDTO summonerStats = resultLeagueControllerDynamic.GetType().GetProperty("data").GetValue(resultLeagueControllerDynamic, null);
 
-            Assert.Equal(summonerName, summonerStats.summonerName);
+            Assert.Equal(summonerName, summonerStats.SummonerName);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace OvStats_Website.Clients
 {
     public class RiotClient : IRiotClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;     
 
         public RiotClient(HttpClient httpClient, IConfiguration config) {
             _httpClient = httpClient;
@@ -48,12 +48,11 @@ namespace OvStats_Website.Clients
             return JsonConvert.DeserializeObject<IEnumerable<string>>(content) ?? throw new InvalidOperationException();
         }
     }
-}
-
-public interface IRiotClient
-{
-    Task<SummonerAccountDTO> GetAccount(string username, string region);
-    Task<IEnumerable<SummonerStatsDTO>> GetSummonerInfo(string userId, string region);
-    Task<MatchDTO> GetMatch(string matchID);
-    Task<IEnumerable<string>> GetMatchHistoryIDs(string userAccountPuuid);
+    public interface IRiotClient
+    {
+        Task<SummonerAccountDTO> GetAccount(string username, string region);
+        Task<IEnumerable<SummonerStatsDTO>> GetSummonerInfo(string userId, string region);
+        Task<MatchDTO> GetMatch(string matchID);
+        Task<IEnumerable<string>> GetMatchHistoryIDs(string userAccountPuuid);
+    }
 }

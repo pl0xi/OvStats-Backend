@@ -1,22 +1,25 @@
-﻿namespace OvStats_Website.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OvStats_Website.DTO
 {
     public class InfoDTO
     {
-        public long gameCreation { get; set; }
-        public long gameDuration { get; set; }
-        public long gameEndTimestamp { get; set; }
-        public long gameId { get; set; }
-        public string gameMode { get; set; }
-        public string gameName { get; set; }
-        public long gameStartTimestamp { get; set; }
-        public string gameType { get; set; }
-        public string gameVersion { get; set; }
-        public int mapId { get; set; }
+        public long GameCreation { get; set; }
+        public long GameDuration { get; set; }
+        public long GameEndTimestamp { get; set; }
+        [Key]
+        public long GameId { get; set; }
+        public string GameMode { get; set; }
+        public string GameName { get; set; }
+        public long GameStartTimestamp { get; set; }
+        public string GameType { get; set; }
+        public string GameVersion { get; set; }
+        public int MapId { get; set; }
         // TODO: participantsDTO
-        public List<ParticipantsDTO> participants { get; set; }
-        public string platformId { get; set; }
-        public int queueId { get; set; }
+        public List<ParticipantsDTO> Participants { get; set; }
+        public string PlatformId { get; set; }
+        public int QueueId { get; set; }
         // TODO: TeamDTO
-        public string tournamentCode { get; set; }
+        public string TournamentCode { get; set; }
     }
 }

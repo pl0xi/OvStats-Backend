@@ -1,30 +1,41 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.ComponentModel.DataAnnotations;
 
 namespace OvStats_Website.DTO
 {
     public class SummonerStatsDTO
     {
-        public string leagueId { get; set; }
-        public string summonerId { get; set; }
-        public string summonerName { get; set; }
-        public string queueType { get; set; }
-        public string tier { get; set; }
-        public string rank { get; set; }
-        public int leaguePoints { get; set; }
-        public int wins { get; set; }
-        public int losses { get; set; }
-        public bool hotStreak { get; set; }
-        public bool veteran { get; set; }
-        public bool freshBlood { get; set; }
-        public bool inactive { get; set; }
-        public MiniSeries miniSeries { get; set; }
+        [Key]
+        public int Id { get; set; }
+        public string LeagueId { get; set; }
+        public string SummonerId { get; set; }
+        public string SummonerName { get; set; }
+        public string QueueType { get; set; }
+        public string Tier { get; set; }
+        public string Rank { get; set; }
+        public int LeaguePoints { get; set; }
+        public int Wins { get; set; }
+        public int Losses { get; set; }
+        public bool HotStreak { get; set; }
+        public bool Veteran { get; set; }
+        public bool FreshBlood { get; set; }
+        public bool Inactive { get; set; }
+        public MiniSeries MiniSeries { get; set; }
+
+        public static implicit operator SummonerStatsDTO(EntityEntry<SummonerStatsDTO> v)
+        {
+            return v.Entity;
+        }
     }
 
     public class MiniSeries
     {
-        public int losses { get; set; }
-        public string progress { get; set; }
-        public int target { get; set; }
-        public int wins { get; set; }
+        [Key] 
+        public int Id { get; set; }
+        public int Losses { get; set; }
+        public string Progress { get; set; }
+        public int Target { get; set; }
+        public int Wins { get; set; }
     }
+
 }

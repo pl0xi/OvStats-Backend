@@ -7,5 +7,7 @@ namespace OvStats_Website.DBContext
     {
         public AppDBContext(DbContextOptions<AppDBContext> options) : base(options) { }
         public DbSet<SummonerAccountDTO> SummonerAccount { get; set; }
+        public DbSet<SummonerStatsDTO> SummonerStats { get; set; }
+        public DbSet<MatchDTO> Matches { get; set; }
     }
 }
