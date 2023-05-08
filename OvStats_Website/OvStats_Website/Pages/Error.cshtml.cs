@@ -14,7 +14,7 @@ namespace OvStats_Website.Pages
             _logger = logger;
         }
 
-        public string? RequestId { get; set; }
+        public string RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 

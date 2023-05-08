@@ -17,7 +17,7 @@ namespace OvStats_Website_Test
 
         public RiotClientTest(ITestOutputHelper output)
         {
-            Mock<HttpClient> mockHttpClient = new Mock<HttpClient>();
+            Mock<HttpClient> mockHttpClient = new();
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -35,8 +35,8 @@ namespace OvStats_Website_Test
             string region = "euw1";
             SummonerAccountDTO summonerAccountDTO = await _IRiotClient.GetAccount(username, region);
 
-            Assert.NotNull(summonerAccountDTO.id);
-            Assert.Equal("sofieee", summonerAccountDTO.name);
+            Assert.NotNull(summonerAccountDTO.Id);
+            Assert.Equal("sofieee", summonerAccountDTO.Name);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace OvStats_Website_Test
             IEnumerable<SummonerStatsDTO> summonerStats = await _IRiotClient.GetSummonerInfo(userId, region);
         
             Assert.NotNull(summonerStats);
-            Assert.Contains(summonerStats, stats => stats.queueType == "RANKED_SOLO_5x5");
+            Assert.Contains(summonerStats, stats => stats.QueueType == "RANKED_SOLO_5x5");
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace OvStats_Website_Test
             MatchDTO match = await _IRiotClient.GetMatch(matchId);
 
             Assert.NotNull(match);
-            Assert.Equal(1680817137246, match.info.gameEndTimestamp);
+            Assert.Equal(1680817137246, match.Info.GameEndTimestamp);
 
         }
 

@@ -5,13 +5,11 @@ namespace OvStats_Website.Clients
 {
     public class RiotClient : IRiotClient
     {
-        private readonly HttpClient _httpClient;
-        private readonly string riotApiKey;
+        private readonly HttpClient _httpClient;     
 
         public RiotClient(HttpClient httpClient, IConfiguration config) {
             _httpClient = httpClient;
-            riotApiKey = config["Riot:ApiKey"];
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", riotApiKey);
+            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", config["Riot:ApiKey"]);
         }
 
         public async Task<SummonerAccountDTO> GetAccount(string username, string region)
@@ -50,12 +48,11 @@ namespace OvStats_Website.Clients
             return JsonConvert.DeserializeObject<IEnumerable<string>>(content) ?? throw new InvalidOperationException();
         }
     }
-}
-
-public interface IRiotClient
-{
-    Task<SummonerAccountDTO> GetAccount(string username, string region);
-    Task<IEnumerable<SummonerStatsDTO>> GetSummonerInfo(string userId, string region);
-    Task<MatchDTO> GetMatch(string matchID);
-    Task<IEnumerable<string>> GetMatchHistoryIDs(string userAccountPuuid);
+    public interface IRiotClient
+    {
+        Task<SummonerAccountDTO> GetAccount(string username, string region);
+        Task<IEnumerable<SummonerStatsDTO>> GetSummonerInfo(string userId, string region);
+        Task<MatchDTO> GetMatch(string matchID);
+        Task<IEnumerable<string>> GetMatchHistoryIDs(string userAccountPuuid);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OvStats_Website.Clients;
 using OvStats_Website.DTO;
 
 namespace OvStats_Website.Controllers
@@ -8,10 +9,12 @@ namespace OvStats_Website.Controllers
     public class LeagueController : ControllerBase
     {
         private readonly IRiotClient riotClient;
+        private readonly IDbClient dbClient;
 
-        public LeagueController(IRiotClient _riotClient)
+        public LeagueController(IRiotClient _riotClient, IDbClient _dbClient)
         {
             riotClient = _riotClient;
+            dbClient = _dbClient;
         }
 
         [HttpGet(Name = nameof(GetSummoner))]
@@ -19,16 +22,30 @@ namespace OvStats_Website.Controllers
         [Produces("application/json")]
         public async Task<ActionResult> GetSummoner(string username, string region)
         {
-            SummonerAccountDTO userAccount = await riotClient.GetAccount(username, region);
-            IEnumerable<SummonerStatsDTO> summonerInfo = await riotClient.GetSummonerInfo(userAccount.id, region);
+            SummonerAccountDTO userAccount = await dbClient.GetSummonerAccount(username, region);
 
-            SummonerStatsDTO summonerStat = summonerInfo.Where(queue => queue.queueType == "RANKED_SOLO_5x5").First();
-            summonerStat.summonerId = "hidden";
+            if (userAccount is null)
+            {
+                userAccount = await riotClient.GetAccount(username, region);
+                userAccount.Region = region;
+                userAccount = await dbClient.PersistSummonerAccount(userAccount);
+            }
+
+            IEnumerable<SummonerStatsDTO> summonerStats = dbClient.GetSummonerStats(userAccount.Id, region);
+            if (!summonerStats.Any())
+            {
+                IEnumerable<SummonerStatsDTO> summonerStatsToPersist = await riotClient.GetSummonerInfo(userAccount.Id, region);
+                summonerStats = await dbClient.PersistSummonerStats(summonerStatsToPersist);
+            } 
+
+            SummonerStatsDTO summonerRankedSoloStat = summonerStats.Where(queue => queue.QueueType == "RANKED_SOLO_5x5").First();
+
+            summonerRankedSoloStat.SummonerId = "hidden";
 
             var returnResponse = new
             {
                 href = Url.Link(nameof(GetSummoner), null),
-                data = summonerStat
+                data = summonerRankedSoloStat
             };
 
             return Ok(returnResponse);
@@ -57,9 +74,9 @@ namespace OvStats_Website.Controllers
         [Route("summoner/matches")]
         [Produces("application/json")]
         public async Task<ActionResult> GetSummonerMatchHistory(string username, string region) {
-            List<MatchDTO> matches = new List<MatchDTO>(); 
+            List<MatchDTO> matches = new(); 
             SummonerAccountDTO userAccount = await riotClient.GetAccount(username, region);
-            IEnumerable<string> matchesID = await riotClient.GetMatchHistoryIDs(userAccount.puuid);
+            IEnumerable<string> matchesID = await riotClient.GetMatchHistoryIDs(userAccount.Puuid);
 
             foreach (string matchID in matchesID)
             {
@@ -71,7 +88,7 @@ namespace OvStats_Website.Controllers
             {
                 href = Url.Link(nameof(GetSummonerMatchHistory), null),
                 data = new { 
-                    playerPuuid = userAccount.puuid,
+                    playerPuuid = userAccount.Puuid,
                     matches
                 }
             };

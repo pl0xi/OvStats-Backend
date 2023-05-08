@@ -1,12 +1,21 @@
+using Microsoft.EntityFrameworkCore;
 using OvStats_Website.Clients;
+using OvStats_Website.DBContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
-builder.Services.AddControllersWithViews();
+
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AppContext"))
+);
+
 builder.Services.AddSingleton<IRiotClient, RiotClient>();
+builder.Services.AddScoped<IDbClient, DbClient>();
 builder.Services.AddHttpClient<IRiotClient, RiotClient>();
 builder.Services.AddCors(options =>
 {
@@ -26,20 +35,11 @@ if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-    app.UseStaticFiles();
-} else
-{
-    app.UseSpa(spa =>
-    {
-        spa.Options.SourcePath = "ClientApp";
-        spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-    });
 }
 
 app.UseCors("AllowAllHeaders");
 app.UseHttpsRedirection();
 app.UseRouting();
-
 
 app.MapControllerRoute(
     name: "default",
