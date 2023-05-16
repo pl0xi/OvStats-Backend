@@ -7,6 +7,7 @@ This is a backend service for (https://github.com/pl0xi/OvStats-Twitch_Panel_Lea
 - Moq
 - Entity Framework 
 - Postgres
+- NodaTime
 
 ## Features
 - REST API
