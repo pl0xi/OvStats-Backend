@@ -84,15 +84,37 @@ namespace OvStats_Website.Clients
 
             return summonerStats;
         }
+
+        public async Task<MatchDTO> PersistMatch(MatchDTO match)
+        {
+            match.MatchId = match.MetaData.MatchID;
+            MatchDTO _match = await db.Matches.AddAsync(match);
+            await db.SaveChangesAsync();
+
+            return _match;
+        }
+
+        public async Task<MatchDTO> GetMatch(string matchId)
+        {
+            MatchDTO match = await db.Matches.Include(match_ => match_.Info.Participants).FirstOrDefaultAsync(dbMatch => dbMatch.MatchId == matchId);
+            return match;
+        }
     }
 
     public interface IDbClient
     {
+        // SummonerAccount
         Task<SummonerAccountDTO> GetSummonerAccount(string username, string region);
         Task<SummonerAccountDTO> PersistSummonerAccount(SummonerAccountDTO summoner);
+        Task<SummonerAccountDTO> UpdateSummonerAccount(SummonerAccountDTO summonerAccount, SummonerAccountDTO riotSummonerAccount);
+
+        // SummonerStats
         IEnumerable<SummonerStatsDTO> GetSummonerStats(string userId, string region);
         Task<IEnumerable<SummonerStatsDTO>> PersistSummonerStats(IEnumerable<SummonerStatsDTO> summonerStats);
-        Task<SummonerAccountDTO> UpdateSummonerAccount(SummonerAccountDTO summonerAccount, SummonerAccountDTO riotSummonerAccount);
         Task<IEnumerable<SummonerStatsDTO>> UpdateSummonerStats(IEnumerable<SummonerStatsDTO> summonerStats, IEnumerable<SummonerStatsDTO> riotSummonerStats);
+
+        // Match
+        Task<MatchDTO> PersistMatch(MatchDTO match);
+        Task<MatchDTO> GetMatch(string matchId);
     }
 }

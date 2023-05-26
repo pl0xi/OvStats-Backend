@@ -2,6 +2,7 @@
 using NodaTime;
 using OvStats_Website.Clients;
 using OvStats_Website.DTO;
+using System.Text.RegularExpressions;
 
 namespace OvStats_Website.Controllers
 {
@@ -93,8 +94,11 @@ namespace OvStats_Website.Controllers
 
             foreach (string matchID in matchesID)
             {
-                MatchDTO match_ = await riotClient.GetMatch(matchID);
-                matches.Add(match_);
+                // Check if match is already in the database (Persist if it isnt)
+                MatchDTO match = await dbClient.GetMatch(matchID);
+                match ??= await dbClient.PersistMatch(await riotClient.GetMatch(matchID));
+
+                matches.Add(match);
             }
 
             var returnResponse = new

@@ -107,5 +107,6 @@ namespace OvStats_Website.DTO
         public int WardsKilled { get; set; }
         public int WardsPlaced { get; set; }
         public bool Win { get; set; }
+        public long InfoId { get; set; }
     }
 }

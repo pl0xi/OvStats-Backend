@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace OvStats_Website.Migrations
 {
     /// <inheritdoc />
-    public partial class initialDB : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,6 +34,20 @@ namespace OvStats_Website.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InfoDTO", x => x.GameId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MetaDataDTO",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DataVersion = table.Column<string>(type: "text", nullable: true),
+                    MatchID = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MetaDataDTO", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,24 +83,6 @@ namespace OvStats_Website.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SummonerAccount", x => x.Puuid);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Matches",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    InfoGameId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Matches", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Matches_InfoDTO_InfoGameId",
-                        column: x => x.InfoGameId,
-                        principalTable: "InfoDTO",
-                        principalColumn: "GameId");
                 });
 
             migrationBuilder.CreateTable(
@@ -195,16 +191,40 @@ namespace OvStats_Website.Migrations
                     WardsKilled = table.Column<int>(type: "integer", nullable: false),
                     WardsPlaced = table.Column<int>(type: "integer", nullable: false),
                     Win = table.Column<bool>(type: "boolean", nullable: false),
-                    InfoDTOGameId = table.Column<long>(type: "bigint", nullable: true)
+                    InfoId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ParticipantsDTO", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ParticipantsDTO_InfoDTO_InfoDTOGameId",
-                        column: x => x.InfoDTOGameId,
+                        name: "FK_ParticipantsDTO_InfoDTO_InfoId",
+                        column: x => x.InfoId,
+                        principalTable: "InfoDTO",
+                        principalColumn: "GameId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Matches",
+                columns: table => new
+                {
+                    MatchId = table.Column<string>(type: "text", nullable: false),
+                    InfoGameId = table.Column<long>(type: "bigint", nullable: true),
+                    MetaDataId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Matches", x => x.MatchId);
+                    table.ForeignKey(
+                        name: "FK_Matches_InfoDTO_InfoGameId",
+                        column: x => x.InfoGameId,
                         principalTable: "InfoDTO",
                         principalColumn: "GameId");
+                    table.ForeignKey(
+                        name: "FK_Matches_MetaDataDTO_MetaDataId",
+                        column: x => x.MetaDataId,
+                        principalTable: "MetaDataDTO",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -226,7 +246,8 @@ namespace OvStats_Website.Migrations
                     Veteran = table.Column<bool>(type: "boolean", nullable: false),
                     FreshBlood = table.Column<bool>(type: "boolean", nullable: false),
                     Inactive = table.Column<bool>(type: "boolean", nullable: false),
-                    MiniSeriesId = table.Column<int>(type: "integer", nullable: true)
+                    MiniSeriesId = table.Column<int>(type: "integer", nullable: true),
+                    LastUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -244,9 +265,14 @@ namespace OvStats_Website.Migrations
                 column: "InfoGameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParticipantsDTO_InfoDTOGameId",
+                name: "IX_Matches_MetaDataId",
+                table: "Matches",
+                column: "MetaDataId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParticipantsDTO_InfoId",
                 table: "ParticipantsDTO",
-                column: "InfoDTOGameId");
+                column: "InfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SummonerStats_MiniSeriesId",
@@ -268,6 +294,9 @@ namespace OvStats_Website.Migrations
 
             migrationBuilder.DropTable(
                 name: "SummonerStats");
+
+            migrationBuilder.DropTable(
+                name: "MetaDataDTO");
 
             migrationBuilder.DropTable(
                 name: "InfoDTO");
