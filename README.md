@@ -17,7 +17,7 @@ This is a backend service for (https://github.com/pl0xi/OvStats-Twitch_Panel_Lea
       - Rank
 
 # Roadmap
-- [ ] Local database (Minimize request to Riot API)
+- [x] Local database (Minimize request to Riot API)
 - [ ] Profile view 
 - [ ] Summoner match history
 
