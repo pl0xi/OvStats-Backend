@@ -11,7 +11,8 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnC
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDBContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("AppContext"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("AppContext"), 
+        o => o.UseNodaTime())
 );
 
 builder.Services.AddSingleton<IRiotClient, RiotClient>();

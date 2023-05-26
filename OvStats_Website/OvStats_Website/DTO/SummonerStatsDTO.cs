@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NodaTime;
 using System.ComponentModel.DataAnnotations;
 
 namespace OvStats_Website.DTO
@@ -21,6 +22,7 @@ namespace OvStats_Website.DTO
         public bool FreshBlood { get; set; }
         public bool Inactive { get; set; }
         public MiniSeries MiniSeries { get; set; }
+        public Instant LastUpdated { get; set; }
 
         public static implicit operator SummonerStatsDTO(EntityEntry<SummonerStatsDTO> v)
         {

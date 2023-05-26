@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -62,7 +63,8 @@ namespace OvStats_Website.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Id = table.Column<string>(type: "text", nullable: true),
                     SummonerLevel = table.Column<long>(type: "bigint", nullable: false),
-                    Region = table.Column<string>(type: "text", nullable: true)
+                    Region = table.Column<string>(type: "text", nullable: true),
+                    LastUpdated = table.Column<Instant>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

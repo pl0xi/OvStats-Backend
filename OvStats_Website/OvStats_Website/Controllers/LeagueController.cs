@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 using OvStats_Website.Clients;
 using OvStats_Website.DTO;
 
@@ -23,20 +24,32 @@ namespace OvStats_Website.Controllers
         public async Task<ActionResult> GetSummoner(string username, string region)
         {
             SummonerAccountDTO userAccount = await dbClient.GetSummonerAccount(username, region);
-
+            
+            // Persist or update the summoner account in the database, if non existen or outdated.
             if (userAccount is null)
             {
+                // Gathering data from Riot API, and persist in local database
                 userAccount = await riotClient.GetAccount(username, region);
                 userAccount.Region = region;
                 userAccount = await dbClient.PersistSummonerAccount(userAccount);
+            } else if (userAccount.LastUpdated < SystemClock.Instance.GetCurrentInstant() - Duration.FromMinutes(30))
+            {
+                // Gathering data from Riot API, and update entity in local database
+                SummonerAccountDTO riotUserAccount = await riotClient.GetAccount(username, region);
+                userAccount = await dbClient.UpdateSummonerAccount(userAccount, riotUserAccount);
             }
 
+            // Persist or update the summoner stats, if none existen or outdated 
             IEnumerable<SummonerStatsDTO> summonerStats = dbClient.GetSummonerStats(userAccount.Id, region);
             if (!summonerStats.Any())
             {
                 IEnumerable<SummonerStatsDTO> summonerStatsToPersist = await riotClient.GetSummonerInfo(userAccount.Id, region);
                 summonerStats = await dbClient.PersistSummonerStats(summonerStatsToPersist);
-            } 
+            } else if (summonerStats.First().LastUpdated < SystemClock.Instance.GetCurrentInstant() - Duration.FromMinutes(5))
+            {
+                IEnumerable<SummonerStatsDTO> riotSummonerStats = await riotClient.GetSummonerInfo(userAccount.Id, region);
+                summonerStats = await dbClient.UpdateSummonerStats(summonerStats, riotSummonerStats);
+            }
 
             SummonerStatsDTO summonerRankedSoloStat = summonerStats.Where(queue => queue.QueueType == "RANKED_SOLO_5x5").First();
 
