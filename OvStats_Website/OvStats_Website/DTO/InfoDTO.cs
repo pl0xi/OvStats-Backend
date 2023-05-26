@@ -15,8 +15,7 @@ namespace OvStats_Website.DTO
         public string GameType { get; set; }
         public string GameVersion { get; set; }
         public int MapId { get; set; }
-        // TODO: participantsDTO
-        public List<ParticipantsDTO> Participants { get; set; }
+        public List<ParticipantsDTO> Participants { get; set; } = new List<ParticipantsDTO>();
         public string PlatformId { get; set; }
         public int QueueId { get; set; }
         // TODO: TeamDTO

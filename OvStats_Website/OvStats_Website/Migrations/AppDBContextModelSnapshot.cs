@@ -74,20 +74,41 @@ namespace OvStats_Website.Migrations
 
             modelBuilder.Entity("OvStats_Website.DTO.MatchDTO", b =>
                 {
+                    b.Property<string>("MatchId")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("InfoGameId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("MetaDataId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MatchId");
+
+                    b.HasIndex("InfoGameId");
+
+                    b.HasIndex("MetaDataId");
+
+                    b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("OvStats_Website.DTO.MetaDataDTO", b =>
+                {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<long?>("InfoGameId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("DataVersion")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MatchID")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InfoGameId");
-
-                    b.ToTable("Matches");
+                    b.ToTable("MetaDataDTO");
                 });
 
             modelBuilder.Entity("OvStats_Website.DTO.MiniSeries", b =>
@@ -198,7 +219,7 @@ namespace OvStats_Website.Migrations
                     b.Property<string>("IndivdualPosition")
                         .HasColumnType("text");
 
-                    b.Property<long?>("InfoDTOGameId")
+                    b.Property<long>("InfoId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("InhibitorKills")
@@ -428,7 +449,7 @@ namespace OvStats_Website.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InfoDTOGameId");
+                    b.HasIndex("InfoId");
 
                     b.ToTable("ParticipantsDTO");
                 });
@@ -484,6 +505,9 @@ namespace OvStats_Website.Migrations
                     b.Property<bool>("Inactive")
                         .HasColumnType("boolean");
 
+                    b.Property<Instant>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LeagueId")
                         .HasColumnType("text");
 
@@ -530,14 +554,22 @@ namespace OvStats_Website.Migrations
                         .WithMany()
                         .HasForeignKey("InfoGameId");
 
+                    b.HasOne("OvStats_Website.DTO.MetaDataDTO", "MetaData")
+                        .WithMany()
+                        .HasForeignKey("MetaDataId");
+
                     b.Navigation("Info");
+
+                    b.Navigation("MetaData");
                 });
 
             modelBuilder.Entity("OvStats_Website.DTO.ParticipantsDTO", b =>
                 {
                     b.HasOne("OvStats_Website.DTO.InfoDTO", null)
                         .WithMany("Participants")
-                        .HasForeignKey("InfoDTOGameId");
+                        .HasForeignKey("InfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OvStats_Website.DTO.SummonerStatsDTO", b =>
