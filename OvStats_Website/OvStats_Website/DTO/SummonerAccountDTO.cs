@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NodaTime;
 using System.ComponentModel.DataAnnotations;
 
 namespace OvStats_Website.DTO
@@ -14,6 +15,7 @@ namespace OvStats_Website.DTO
         public string Puuid { get; set; }
         public long SummonerLevel { get; set; }
         public string Region { get; set; }
+        public Instant LastUpdated { get; set; }
 
         public static implicit operator SummonerAccountDTO(EntityEntry<SummonerAccountDTO> v)
         {

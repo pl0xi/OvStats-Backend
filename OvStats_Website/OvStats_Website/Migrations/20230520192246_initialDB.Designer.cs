@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OvStats_Website.DBContext;
 
@@ -12,7 +13,7 @@ using OvStats_Website.DBContext;
 namespace OvStats_Website.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20230508001729_initialDB")]
+    [Migration("20230520192246_initialDB")]
     partial class initialDB
     {
         /// <inheritdoc />
@@ -445,6 +446,9 @@ namespace OvStats_Website.Migrations
 
                     b.Property<string>("Id")
                         .HasColumnType("text");
+
+                    b.Property<Instant>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");

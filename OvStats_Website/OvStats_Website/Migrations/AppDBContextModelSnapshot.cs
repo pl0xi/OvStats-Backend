@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NodaTime;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OvStats_Website.DBContext;
 
@@ -442,6 +443,9 @@ namespace OvStats_Website.Migrations
 
                     b.Property<string>("Id")
                         .HasColumnType("text");
+
+                    b.Property<Instant>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
